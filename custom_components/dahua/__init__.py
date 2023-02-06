@@ -621,6 +621,12 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
 
         return self.data.get(f'table.Lighting_V2[{self._channel}][{profile_mode}][1].Mode') == "Manual"
 
+    def get_amcrest_flood_light_brightness(self) -> bool:
+        """Return the brightness of Amcrest ASH26W Floodlight"""
+        profile_mode = self.get_profile_mode()
+        bri = self.data.get(f"table.Lighting_V2[{self._channel}][{profile_mode}][1].NearLight[0].Light")
+        return dahua_utils.dahua_brightness_to_hass_brightness(bri)
+
     def is_ring_light_on(self) -> bool:
         """Return true if ring light is on for an Amcrest Doorbell"""
         return self.data.get("table.LightGlobal[0].Enable") == "true"

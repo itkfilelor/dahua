@@ -218,6 +218,11 @@ class AmcrestFloodLight(DahuaBaseEntity, LightEntity):
         self._coordinator = coordinator
 
     @property
+    def brightness(self):
+        """Return the brightness of the light"""
+        return self._coordinator.get_amcrest_flood_light_brightness()
+
+    @property
     def name(self):
         """Return the name of the light."""
         return self._coordinator.get_device_name() + " " + self._name
@@ -247,16 +252,20 @@ class AmcrestFloodLight(DahuaBaseEntity, LightEntity):
 
     async def async_turn_on(self, **kwargs):
         """Turn the light on"""
+        hass_brightness = kwargs.get(ATTR_BRIGHTNESS)
+        dahua_brightness = dahua_utils.hass_brightness_to_dahua_brightness(hass_brightness)
         channel = self._coordinator.get_channel()
         profile_mode = self._coordinator.get_profile_mode()
-        await self._coordinator.client.async_set_lighting_v2_for_amcrest_flood_lights(channel, True, profile_mode)
+        await self._coordinator.client.async_set_lighting_v2_for_amcrest_flood_lights(channel, True, dahua_brightness, profile_mode)
         await self._coordinator.async_refresh()
 
     async def async_turn_off(self, **kwargs):
         """Turn the light off"""
+        hass_brightness = kwargs.get(ATTR_BRIGHTNESS)
+        dahua_brightness = dahua_utils.hass_brightness_to_dahua_brightness(hass_brightness)
         channel = self._coordinator.get_channel()
         profile_mode = self._coordinator.get_profile_mode()
-        await self._coordinator.client.async_set_lighting_v2_for_amcrest_flood_lights(channel, False, profile_mode)
+        await self._coordinator.client.async_set_lighting_v2_for_amcrest_flood_lights(channel, False, dahua_brightness, profile_mode)
         await self._coordinator.async_refresh()
 
 
